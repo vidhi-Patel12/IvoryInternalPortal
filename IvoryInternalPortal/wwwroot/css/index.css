@@ -1,0 +1,140 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: #f6f8fc;
+}
+
+/* Modal Overlay */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Box */
+.modal-box {
+    width: 450px;
+    text-align: center;
+}
+
+/* Top Icon */
+.top-icon {
+    width: 70px;
+    height: 70px;
+    background: #4f46e5;
+    color: white;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    margin: auto;
+}
+
+/* Titles */
+h1 {
+    margin-top: 18px;
+    font-size: 26px;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-top: 6px;
+    font-size: 15px;
+}
+
+/* Card */
+.card {
+    background: white;
+    margin-top: 28px;
+    padding: 26px;
+    border-radius: 14px;
+    text-align: left;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    font-size: 18px;
+}
+
+.card-sub {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 6px 0 18px;
+}
+
+/* Inputs */
+label {
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.input-group span {
+    margin-right: 8px;
+    opacity: 0.6;
+}
+
+.input-group input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* Options */
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin: 10px 0 16px;
+}
+
+.options a {
+    color: #4f46e5;
+    text-decoration: none;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(to right, #030712, #111827);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #4f46e5;
+    text-decoration: none;
+}

@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ivory Technolab</title>
+    <link rel="stylesheet" href="~/css/index.css">
+</head>
+<body>
+
+    <!-- Modal (Visible by Default) -->
+    <div class="modal">
+        <div class="modal-box">
+
+            <!-- Top Icon -->
+            <div class="top-icon">
+                🏢
+            </div>
+
+            <!-- Title -->
+            <h1>Welcome to Ivory Technolab</h1>
+            @* <p class="subtitle">Manage your vendors and employees efficiently</p> *@
+
+            <!-- Card -->
+            <div class="card">
+                <h2>Sign in to your account</h2>
+                @* <p class="card-sub">
+                    Enter your credentials to access your dashboard
+                </p> *@
+
+                <!-- Email -->
+                <label>Email address</label>
+                <div class="input-group">
+                    <span>✉️</span>
+                    <input type="email" id="loginEmail" placeholder="you@example.com">
+                </div>
+
+                <!-- Password -->
+                <label>Password</label>
+                <div class="input-group">
+                    <span>🔒</span>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+
+                <!-- Options -->
+                @* <div class="options">
+                    <label class="remember">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+                     <a href="#">Forgot password?</a> 
+                </div> *@
+
+                <!-- Button -->
+                <button id="loginBtn">Sign in</button>
+
+                <!-- Footer -->
+                <p class="footer">
+                    Don't have an account? <a href="/Home/Register">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const apiurl = "https://localhost:44385";
+
+        document.getElementById("loginBtn")
+            .addEventListener("click", function () {
+
+                const email = document.getElementById("loginEmail").value.trim();
+                const password = document.getElementById("loginPassword").value;
+
+                if (!email || !password) {
+                    alert("Please enter email and password");
+                    return;
+                }
+
+                const payload = {
+                    email: email,
+                    password: password
+                };
+
+                fetch(`${apiurl}/api/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(async res => {
+                    const result = await res.json();
+                    if (!res.ok) throw result;
+                    return result;
+                })
+                .then(result => {
+
+                    const user = result.data;
+
+                    // ✅ Set cookies
+                    document.cookie = `RoleId=${user.roleId}; path=/`;
+                    document.cookie = `RoleName=${user.roleName}; path=/`;
+                    document.cookie = `Email=${user.email}; path=/`;
+
+                    alert(result.message);
+
+                    // ✅ Role-based redirect
+                    switch (user.roleId) {
+                        case 1:
+                            window.location.href = "/Admin/Index";
+                            break;
+                        case 2:
+                            window.location.href = "/CEO/Index";
+                            break;
+                        case 3:
+                            window.location.href = "/Vendor/Index";
+                            break;
+                        case 4:
+                            window.location.href = "/Employee/Index";
+                            break;
+                        default:
+                            alert("Unknown role");
+                    }
+                })
+                .catch(err => {
+                    alert(err.message || "Login failed");
+                });
+            });
+    </script>
+
+</body>
+</html>
