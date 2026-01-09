@@ -1,0 +1,487 @@
+﻿@{
+    Layout = "~/Shared/_Layout.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Management</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 3px;
+        }
+
+            .action-btn i {
+                font-size: 16px;
+            }
+
+        .employee-card {
+            border-radius: 14px;
+            border: 1px solid #eee;
+            padding: 20px;
+            background: #fff;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 20px;
+            padding-right: 85px;
+        }
+
+            .employee-card:hover {
+                box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e7ebff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .card-actions i {
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .card-footer-info {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            display: flex;
+            gap: 12px;
+        }
+
+            .card-actions i {
+                cursor: pointer;
+                font-size: 18px;
+            }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container mt-4">
+
+        @* <div class="d-flex justify-content-between mb-3">
+            <h3>Employees</h3>
+            <button class="btn btn-success" onclick="openCreateModal()">
+                Add Employee
+            </button>
+
+
+        </div> *@
+
+        <!-- EMPLOYEE TABLE -->
+
+        <div class="container mt-4">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3 class="fw-bold">Employees</h3>
+                </div>
+
+                <button class="btn btn-dark" style="background-color:#363195; border-color:#363195;" onclick="openCreateModal()">
+                    <i class="bi bi-plus-lg"></i> Add Employee
+                </button>
+            </div>
+
+            <!-- SEARCH -->
+            <div class="mb-4">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-light border-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           class="form-control bg-light border-0" "
+                           placeholder="Search employees by name, email, department, or position..."
+                           id="searchInput">
+                </div>
+            </div>
+
+            <!-- EMPLOYEE CARD GRID -->
+            <div class="row g-4" id="employeeCardContainer">
+                <!-- Cards injected by JS -->
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+
+                <div>
+                    Show
+                    <select id="pageSize" class="form-select d-inline-block w-auto mx-1">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                    </select>
+                    entries
+                </div>
+
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2"
+                            id="prevBtn">
+                        Prev
+                    </button>
+
+                    <span id="pageInfo"></span>
+
+                    <button class="btn btn-outline-secondary btn-sm ms-2"
+                            id="nextBtn">
+                        Next
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        @* <table id="employeeTable" class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Designation</th>
+                    <th width="120">Action</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTableBody"></tbody>
+        </table> *@
+    </div>
+
+    <!-- Employee Modal -->
+    <div class="modal fade" id="employeeModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <form id="employeeForm" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Add Employee</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Hidden ID -->
+                        <input type="hidden" name="EmployeeId" id="EmployeeId" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label>Name</label>
+                                <input type="text" class="form-control" name="EmployeeName" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Email</label>
+                                <input type="email" class="form-control" name="EmployeeEmail" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Phone</label>
+                                <input type="text" class="form-control" name="EmployeePhone" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Address</label>
+                                <textarea type="text" class="form-control" name="EmployeeAddress" required></textarea>
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Designation</label>
+                                <input type="text" class="form-control" name="Designation" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Department</label>
+                                <input type="text" class="form-control" name="Department" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Employment Type</label>
+                                <input type="text" class="form-control" name="EmploymentType" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Skills</label>
+                                <input type="text" class="form-control" name="Skills" required />
+                            </div>
+
+                            <!-- FILES -->
+                            @* <div class="col-md-6 mb-2">
+                                <label>Profile</label>
+                                <input type="file" class="form-control" name="profileFile" required />
+                            </div> *@
+
+
+
+                            <div class="col-md-6 mb-2">
+                                <label>Bank Name</label>
+                                <input type="text" class="form-control" name="BankName" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Account Number</label>
+                                <input type="text" class="form-control" name="AccountNumber" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>IFSC Code</label>
+                                <input type="text" class="form-control" name="IFSCCode" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Account Holder Name</label>
+                                <input type="text" class="form-control" name="AccountHolderName" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Aadhar Number</label>
+                                <input type="number" class="form-control" name="AadhaarNumber" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Pan Number</label>
+                                <input type="text" class="form-control" name="PANNumber" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Salary</label>
+                                <input type="number" class="form-control" name="Salary" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Payroll Cycle</label>
+                                <input type="text" class="form-control" name="PayrollCycle" required />
+                            </div>
+
+                            @* <div class="col-md-6 mb-2">
+                                <label>Aadhaar</label>
+                                <input type="file" class="form-control" name="aadhaarFile" required />
+                            </div> *@
+
+                            <div class="col-md-6 mb-2">
+                                <label>Profile</label>
+
+                                <!-- Fake display (existing + new file) -->
+                                <div id="profileFileDisplay"
+                                     class="border rounded px-3 py-2 mb-1 bg-light text-dark">
+                                    No file chosen
+                                </div>
+
+                                <!-- Real file input -->
+                                <input type="file"
+                                       class="form-control"
+                                       name="profileFile"
+                                       id="profileFileInput"
+                                       onchange="onProfileFileChange(this)">
+                            </div>
+
+
+                            <div class="col-md-6 mb-2">
+                                <label>Aadhaar</label>
+
+                                <!-- Fake display (existing + new file) -->
+                                <div id="aadhaarFileDisplay"
+                                     class="border rounded px-3 py-2 mb-1 bg-light text-dark">
+                                    No file chosen
+                                </div>
+
+                                <!-- Real file input -->
+                                <input type="file"
+                                       class="form-control"
+                                       name="aadhaarFile"
+                                       id="aadhaarFileInput"
+                                       onchange="onAadhaarFileChange(this)">
+                            </div>
+
+                            @* <div class="col-md-6 mb-2">
+                                <label>PAN</label>
+                                <input type="file" class="form-control" name="panFile" required />
+                            </div> *@
+
+                            <div class="col-md-6 mb-2">
+                                <label>PAN</label>
+
+                                <!-- Fake display (existing + new file) -->
+                                <div id="panFileDisplay"
+                                     class="border rounded px-3 py-2 mb-1 bg-light text-dark">
+                                    No file chosen
+                                </div>
+
+                                <!-- Real file input -->
+                                <input type="file"
+                                       class="form-control"
+                                       name="panFile"
+                                       id="panFileInput"
+                                       onchange="onPanFileChange(this)">
+                            </div>
+
+
+
+                            @* <div class="col-md-6 mb-2">
+                                <label>Agreement PDF</label>
+                                <input type="file" class="form-control" name="agreementFile" required />
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Signature</label>
+                                <input type="file" class="form-control" name="signatureFile" required />
+                            </div> *@
+
+                            <div class="col-md-6 mb-2">
+                                <label>Agreement PDF</label>
+
+                                <!-- Fake display (existing + new file) -->
+                                <div id="agreementFileDisplay"
+                                     class="border rounded px-3 py-2 mb-1 bg-light text-dark">
+                                    No file chosen
+                                </div>
+
+                                <!-- Real file input -->
+                                <input type="file"
+                                       class="form-control"
+                                       name="agreementFile"
+                                       id="agreementFileInput"
+                                       onchange="onAgreementFileChange(this)">
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label>Upload Signature (Image/PDF)</label>
+
+                                <div id="signatureFileDisplay"
+                                     class="border rounded px-3 py-2 mb-1 bg-light text-dark">
+                                    No file chosen
+                                </div>
+
+                                <input type="file"
+                                       class="form-control"
+                                       name="signatureFile"
+                                       accept="image/*,.pdf"
+                                       id="signatureFileInput"
+                                       onchange="onSignatureFileChange(this)">
+                            </div>
+
+                            <div class="col-6 mb-2">
+                                <label>OR Draw Digital Signature</label><br />
+
+                                <canvas id="signaturePad"
+                                        width="500"
+                                        height="200"
+                                        style="border:1px solid #ccc; width:100%;">
+                                </canvas>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-secondary mt-2"
+                                        onclick="clearPad()">
+                                    Clear
+                                </button>
+
+                                <input type="hidden" name="SignatureData" id="signatureData">
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this employee?
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="deleteEmployeeId" />
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- VIEW EMPLOYEE MODAL -->
+    <div class="modal fade" id="viewEmployeeModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Employee Details</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <table class="table table-bordered">
+                        <tbody id="viewEmployeeBody"></tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+    <script src="/js/employee.js"></script>
+
+
+
+</body>
+
+</html>
